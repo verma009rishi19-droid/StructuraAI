@@ -1,0 +1,37 @@
+==================================================
+                 TAX INVOICE
+==================================================
+Apex Cloud Technologies Inc.
+742 Innovation Way, Suite 400
+San Francisco, CA 94105, USA
+Email: billing@apexcloud.io | Tax ID: US-994821039
+
+INVOICE DETAILS:
+Invoice No: INV-2024-8841
+Date: 2024-10-15
+Payment Due: 2024-11-15
+Currency: USD
+
+BILLED TO:
+Verma Global Solutions Pvt Ltd
+Attn: Rishi Verma
+Level 4, Tech Park, Outer Ring Road
+Bengaluru, Karnataka 560103, India
+
+---------------------------------------------------------------------------------
+ITEM DESCRIPTION                            QTY     UNIT PRICE ($)    TOTAL ($)
+---------------------------------------------------------------------------------
+1. Cloud Dedicated GPU Compute (A100)       2.00          1250.00      2500.00
+2. Enterprise Vector DB Storage (1TB)       1.00           450.00       450.00
+3. Priority 24/7 Production Support         1.00           300.00       300.00
+---------------------------------------------------------------------------------
+                                                SUBTOTAL:             $3250.00
+                                                TAX (VAT 8%):          $260.00
+                                                ---------------------------------
+                                                TOTAL AMOUNT DUE:     $3510.00
+                                                =================================
+
+PAYMENT TERMS & INSTRUCTIONS:
+Terms: Net 30 days from invoice date.
+Wire Transfer: Silicon Valley Bank | Routing: 121000358 | Acct: 9482019482
+Thank you for your business!

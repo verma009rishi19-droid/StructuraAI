@@ -1,0 +1,32 @@
+RISHI VERMA
+Bengaluru, India | +91 98765 43210 | verma009rishi19@gmail.com
+LinkedIn: linkedin.com/in/rishi-verma | GitHub: github.com/verma009rishi19-droid
+
+PROFESSIONAL SUMMARY:
+Innovative AI Engineer & Full-Stack Developer with hands-on experience building autonomous multi-agent pipelines, high-accuracy document intelligence platforms, and low-latency API architectures with FastAPI, Gemini SDK, and modern React.
+
+CORE TECHNICAL SKILLS:
+- Languages & Frameworks: Python (FastAPI, Pydantic, PyTorch), JavaScript/TypeScript, SQL, C++
+- Generative AI & LLMs: Gemini 2.5 Flash, Multimodal Vision, Structured Outputs, LangGraph, RAGAS, LlamaIndex
+- Tools & Cloud: Docker, Git, PostgreSQL, pgvector, Linux, Google Cloud Platform (GCP)
+
+PROFESSIONAL EXPERIENCE:
+Applied AI Engineering Intern | Cognitive AI Labs, Bengaluru
+January 2024 - Present
+- Architected an automated document ingestion and extraction pipeline using FastAPI and Gemini Multimodal API, reducing human processing time by 45%.
+- Implemented a self-healing reflection engine that reduced arithmetic and entity extraction errors by 32%.
+- Designed side-by-side human-in-the-loop review interfaces with confidence-scoring heuristics.
+
+EDUCATION:
+Bachelor of Technology in Computer Science & Engineering
+National Institute of Technology (2021 - 2025)
+CGPA: 8.8 / 10.0
+
+KEY PROJECTS:
+StructuraAI - Enterprise Unstructured-to-Structured Data Extraction Platform
+- Developed a high-accuracy document extraction system enforcing deterministic Pydantic schema validation.
+- Implemented mathematical consistency algorithms and reflection loops with sub-2s inference latency.
+
+CERTIFICATIONS:
+- Google Cloud Certified Associate Cloud Engineer
+- DeepLearning.AI: Multi-Agent Systems with LangGraph & CrewAI
