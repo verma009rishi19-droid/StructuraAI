@@ -1,4 +1,5 @@
 import io
+import os
 import time
 import json
 import csv
@@ -6,7 +7,7 @@ from typing import Optional
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse, PlainTextResponse
+from fastapi.responses import FileResponse, PlainTextResponse, StreamingResponse
 from pypdf import PdfReader
 from PIL import Image
 
@@ -20,6 +21,9 @@ from app.services.extractor import GeminiExtractor
 from app.services.validator import DataValidator
 from app.services.healer import SelfHealingLoop
 from app.services.benchmark import BenchmarkSuite
+from app.services.html_generator import WebGenerator, save_html, extract_html, ensure_outputs_dir
+
+ensure_outputs_dir()
 
 app = FastAPI(
     title="StructuraAI API",
@@ -92,7 +96,6 @@ async def extract_data(
         elif filename.endswith((".png", ".jpg", ".jpeg", ".webp")):
             image_bytes = content_bytes
             image_mime = file.content_type or "image/png"
-            # Attempt basic OCR fallback text placeholder if no text
             if not extracted_text:
                 extracted_text = f"[Scanned Image: {file.filename}]"
         elif filename.endswith(".txt"):
@@ -134,7 +137,7 @@ async def extract_data(
         raw_text=extracted_text
     )
 
-    # 3. Self-Healing Phase (if errors detected and enabled)
+    # 3. Self-Healing Phase
     healing_applied = False
     healing_rounds = 0
     if not validation_passed and enable_self_healing:
@@ -164,6 +167,40 @@ async def extract_data(
         processing_time_seconds=duration,
         document_summary=f"Processed {len(extracted_text.split())} words across {schema_type} schema in {duration}s."
     )
+
+
+@app.post("/api/generate-web")
+def stream_web_generation(
+    prompt: str = Form(...),
+    system_prompt: Optional[str] = Form(None),
+    api_key: Optional[str] = Form(None)
+):
+    """
+    Streams generated HTML code chunks in real-time.
+    Implements streaming token delivery for live terminal rendering.
+    """
+    def event_stream():
+        for chunk in WebGenerator.stream_html_generation(
+            user_prompt=prompt,
+            system_prompt=system_prompt,
+            api_key=api_key
+        ):
+            yield chunk
+
+    return StreamingResponse(event_stream(), media_type="text/plain")
+
+
+@app.post("/api/save-web")
+def save_generated_html(html_content: str = Form(...)):
+    """Saves generated HTML code to html_outputs/{timestamp}.html and returns the URL."""
+    filepath = save_html(html_content)
+    filename = os.path.basename(filepath)
+    return {
+        "status": "saved",
+        "filepath": filepath,
+        "filename": filename,
+        "preview_url": f"/html_outputs/{filename}"
+    }
 
 
 @app.get("/api/benchmark")
@@ -207,8 +244,9 @@ def export_as_sql(table_name: str = "extracted_records", data: dict = Form(...))
     return PlainTextResponse(sql, media_type="text/plain")
 
 
-# Serve static web frontend
+# Serve static web frontend and generated HTML outputs
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/html_outputs", StaticFiles(directory="html_outputs"), name="html_outputs")
 
 
 @app.get("/")

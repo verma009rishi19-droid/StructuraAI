@@ -41,4 +41,6 @@ Thumbs.db
 # Uploads & Temp
 uploads/
 temp/
+html_outputs/
 *.log
+

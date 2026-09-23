@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>StructuraAI - Enterprise Unstructured Data Extraction & Verification</title>
+  <title>StructuraAI - Enterprise Unstructured Data Extraction & AI Web Studio</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,18 +46,23 @@
               <span>Gemini 2.5 Active</span>
             </span>
           </div>
-          <p class="text-[11px] text-slate-400 font-medium">Enterprise Unstructured Data Extraction & Self-Healing Engine</p>
+          <p class="text-[11px] text-slate-400 font-medium">Enterprise Unstructured Data Extraction & Streaming Web Studio</p>
         </div>
       </div>
 
       <!-- Navigation & Action Buttons -->
       <div class="flex items-center space-x-3">
         <nav class="flex space-x-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800">
-          <button id="tab-extract-btn" onclick="switchTab('extract')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 transition shadow-md shadow-indigo-600/30 flex items-center space-x-1.5">
+          <button id="tab-extract-btn" onclick="switchTab('extract')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 transition shadow-md shadow-indigo-600/30 flex items-center space-x-1.5">
             <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
-            <span>Studio</span>
+            <span>Extraction Studio</span>
           </button>
-          <button id="tab-benchmark-btn" onclick="switchTab('benchmark')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition flex items-center space-x-1.5">
+          <button id="tab-web-btn" onclick="switchTab('web')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition flex items-center space-x-1.5">
+            <i data-lucide="code" class="w-3.5 h-3.5 text-cyan-400"></i>
+            <span>AI Web Studio</span>
+            <span class="px-1.5 py-0.2 rounded text-[9px] bg-cyan-500/20 text-cyan-300 font-mono">Stream</span>
+          </button>
+          <button id="tab-benchmark-btn" onclick="switchTab('benchmark')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition flex items-center space-x-1.5">
             <i data-lucide="bar-chart-3" class="w-3.5 h-3.5"></i>
             <span>Accuracy Benchmark</span>
           </button>
@@ -80,7 +85,9 @@
   <!-- Main Content Body -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col space-y-5 relative z-10">
 
-    <!-- TAB 1: STUDIO WORKSPACE -->
+    <!-- ========================================== -->
+    <!-- TAB 1: EXTRACTION STUDIO WORKSPACE -->
+    <!-- ========================================== -->
     <div id="tab-extract" class="flex-1 flex flex-col space-y-5">
       
       <!-- 1-Click Instant Demo Launcher Cards (Hero Section) -->
@@ -97,8 +104,6 @@
         </div>
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          
-          <!-- Card 1: Invoice -->
           <div onclick="launchQuickDemo('invoice')" class="glass-card p-3.5 rounded-xl cursor-pointer hover:scale-[1.02] border-slate-800/80 group">
             <div class="flex items-center justify-between mb-2">
               <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center group-hover:bg-indigo-500/20 transition">
@@ -110,7 +115,6 @@
             <p class="text-[11px] text-slate-400 mt-0.5">Multi-line items, subtotal, 8% VAT & total reconciliation</p>
           </div>
 
-          <!-- Card 2: Resume -->
           <div onclick="launchQuickDemo('resume')" class="glass-card p-3.5 rounded-xl cursor-pointer hover:scale-[1.02] border-slate-800/80 group">
             <div class="flex items-center justify-between mb-2">
               <div class="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center group-hover:bg-cyan-500/20 transition">
@@ -122,7 +126,6 @@
             <p class="text-[11px] text-slate-400 mt-0.5">Skills taxonomy, work history, education & social handles</p>
           </div>
 
-          <!-- Card 3: Medical -->
           <div onclick="launchQuickDemo('medical')" class="glass-card p-3.5 rounded-xl cursor-pointer hover:scale-[1.02] border-slate-800/80 group">
             <div class="flex items-center justify-between mb-2">
               <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center group-hover:bg-emerald-500/20 transition">
@@ -134,7 +137,6 @@
             <p class="text-[11px] text-slate-400 mt-0.5">Patient symptoms, diagnosis & medication dosages</p>
           </div>
 
-          <!-- Card 4: Financial -->
           <div onclick="launchQuickDemo('financial')" class="glass-card p-3.5 rounded-xl cursor-pointer hover:scale-[1.02] border-slate-800/80 group">
             <div class="flex items-center justify-between mb-2">
               <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center group-hover:bg-amber-500/20 transition">
@@ -145,13 +147,11 @@
             <h4 class="text-xs font-bold text-white group-hover:text-amber-300 transition">Q3 Earnings Statement</h4>
             <p class="text-[11px] text-slate-400 mt-0.5">Revenue, OPEX, Net Margin & Asset calculations</p>
           </div>
-
         </div>
       </div>
 
       <!-- Main Action Bar: Schema Selector & Extract Trigger -->
       <div class="glass-card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
-        
         <div class="flex items-center flex-wrap gap-3">
           <div class="flex items-center space-x-2">
             <i data-lucide="sliders" class="w-4 h-4 text-cyan-400"></i>
@@ -175,12 +175,19 @@
           </label>
         </div>
 
-        <!-- Extract CTA Button -->
-        <button id="extract-btn" onclick="executeExtraction()" class="px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 hover:from-cyan-400 hover:via-indigo-500 hover:to-purple-500 transition shadow-lg shadow-indigo-600/30 flex items-center space-x-2 transform active:scale-95">
-          <i data-lucide="wand-2" class="w-4 h-4"></i>
-          <span>Extract & Verify Now</span>
-        </button>
+        <div class="flex items-center space-x-3">
+          <!-- Quick Convert to Visual Web button -->
+          <button onclick="convertToWebStudio()" title="Generate Interactive Web UI from current document" class="px-4 py-2.5 rounded-xl text-xs font-semibold text-cyan-300 bg-cyan-950/60 hover:bg-cyan-900/60 border border-cyan-500/30 transition flex items-center space-x-1.5">
+            <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400"></i>
+            <span>Generate Web View</span>
+          </button>
 
+          <!-- Extract CTA Button -->
+          <button id="extract-btn" onclick="executeExtraction()" class="px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 hover:from-cyan-400 hover:via-indigo-500 hover:to-purple-500 transition shadow-lg shadow-indigo-600/30 flex items-center space-x-2 transform active:scale-95">
+            <i data-lucide="wand-2" class="w-4 h-4"></i>
+            <span>Extract & Verify Now</span>
+          </button>
+        </div>
       </div>
 
       <!-- Split Screen Studio View: Left (Document) | Right (Structured Data) -->
@@ -188,7 +195,6 @@
         
         <!-- LEFT PANEL: DOCUMENT INGESTION & SCANNER VIEWER -->
         <div id="left-document-card" class="glass-card rounded-2xl p-5 flex flex-col space-y-4 relative overflow-hidden">
-          
           <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
             <div class="flex items-center space-x-2">
               <i data-lucide="file-text" class="w-4 h-4 text-cyan-400"></i>
@@ -229,8 +235,6 @@
 
           <!-- Text View Area with Laser Scanner Overlay Container -->
           <div class="flex-1 relative flex flex-col min-h-[280px] rounded-xl overflow-hidden border border-slate-800 bg-slate-950">
-            
-            <!-- Dynamic Animated Laser Beam (Appears during extraction) -->
             <div id="scanner-overlay" class="hidden absolute inset-0 z-20 pointer-events-none">
               <div class="laser-beam"></div>
               <div class="scanner-grid absolute inset-0"></div>
@@ -242,19 +246,16 @@
 
             <textarea id="raw-text-input" placeholder="Paste document text here, or click one of the 1-Click Demo cards above to test immediately..." class="flex-1 w-full bg-slate-950/90 text-slate-200 font-mono text-xs p-4 focus:outline-none custom-scroll resize-none leading-relaxed"></textarea>
           </div>
-
         </div>
 
         <!-- RIGHT PANEL: VERIFIED STRUCTURED INTELLIGENCE -->
         <div class="glass-card rounded-2xl p-5 flex flex-col space-y-4">
-          
           <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
             <div class="flex items-center space-x-2">
               <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
               <h2 class="text-sm font-bold text-slate-200">Verified Structured Extraction</h2>
             </div>
 
-            <!-- View Switcher & Export -->
             <div class="flex items-center space-x-2">
               <div class="flex bg-slate-900 p-0.5 rounded-lg border border-slate-800 text-xs">
                 <button id="view-cards-btn" onclick="setViewMode('cards')" class="px-2.5 py-1 rounded-md bg-indigo-600 text-white font-medium shadow">Cards</button>
@@ -285,42 +286,37 @@
             </div>
           </div>
 
-          <!-- Live 4-Step Animated Pipeline Stepper (Visual Progress Indicator) -->
+          <!-- Stepper -->
           <div id="pipeline-stepper" class="bg-slate-900/60 p-3 rounded-xl border border-slate-800/80">
             <div class="grid grid-cols-4 gap-2 text-center text-[10px] font-mono">
-              
               <div id="step-1" class="flex flex-col items-center space-y-1 text-slate-500">
                 <div class="step-icon w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
                   <i data-lucide="file-search" class="w-3 h-3"></i>
                 </div>
                 <span class="truncate">1. Ingest OCR</span>
               </div>
-
               <div id="step-2" class="flex flex-col items-center space-y-1 text-slate-500">
                 <div class="step-icon w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
                   <i data-lucide="cpu" class="w-3 h-3"></i>
                 </div>
                 <span class="truncate">2. Gemini Flash</span>
               </div>
-
               <div id="step-3" class="flex flex-col items-center space-y-1 text-slate-500">
                 <div class="step-icon w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
                   <i data-lucide="calculator" class="w-3 h-3"></i>
                 </div>
                 <span class="truncate">3. Math Check</span>
               </div>
-
               <div id="step-4" class="flex flex-col items-center space-y-1 text-slate-500">
                 <div class="step-icon w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
                   <i data-lucide="shield-check" class="w-3 h-3"></i>
                 </div>
                 <span class="truncate">4. Self-Heal</span>
               </div>
-
             </div>
           </div>
 
-          <!-- Self-Healing Alert Banner (Displays when correction occurred) -->
+          <!-- Self-Healing Alert Banner -->
           <div id="healing-banner" class="hidden p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200">
             <div class="flex items-start space-x-2.5">
               <i data-lucide="sparkle" class="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5"></i>
@@ -328,7 +324,7 @@
             </div>
           </div>
 
-          <!-- Quick Search Filter for Extracted Fields -->
+          <!-- Search Filter -->
           <div id="search-filter-box" class="hidden relative">
             <i data-lucide="search" class="w-3.5 h-3.5 text-slate-500 absolute left-3 top-2.5"></i>
             <input type="text" id="field-search-input" oninput="filterFields(this.value)" placeholder="Filter extracted keys (e.g. total, date, skills)..." class="w-full bg-slate-900 text-slate-200 text-xs pl-8 pr-3 py-1.5 rounded-lg border border-slate-800 focus:outline-none focus:border-cyan-500 font-mono">
@@ -336,8 +332,6 @@
 
           <!-- Results Presentation Container -->
           <div class="flex-1 relative overflow-hidden flex flex-col min-h-[300px]">
-            
-            <!-- Empty State / Welcome Screen -->
             <div id="empty-state" class="h-full flex flex-col items-center justify-center text-center p-8 text-slate-500 my-auto">
               <div class="w-14 h-14 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-3 text-slate-600 shadow-inner">
                 <i data-lucide="sparkles" class="w-7 h-7 text-indigo-400"></i>
@@ -348,10 +342,8 @@
               </p>
             </div>
 
-            <!-- Fields Cards Container -->
             <div id="fields-container" class="hidden flex-1 overflow-y-auto space-y-2.5 pr-1 custom-scroll"></div>
 
-            <!-- JSON Code Viewer -->
             <div id="json-container" class="hidden flex-1 overflow-hidden flex flex-col">
               <div class="flex justify-between items-center mb-1 text-[11px] text-slate-400">
                 <span>Output JSON Schema:</span>
@@ -362,19 +354,110 @@
               </div>
               <pre id="json-code" class="flex-1 bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs font-mono text-cyan-300 overflow-auto custom-scroll"></pre>
             </div>
+          </div>
+        </div>
 
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: AI WEB STUDIO (USER'S PATTERN) -->
+    <!-- ========================================== -->
+    <div id="tab-web" class="hidden flex-1 flex flex-col space-y-4">
+      
+      <!-- Studio Control Bar -->
+      <div class="glass-card rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center flex-wrap gap-2.5 flex-1 min-w-[320px]">
+          <div class="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center">
+            <i data-lucide="wand-sparkles" class="w-4 h-4"></i>
+          </div>
+          <input type="text" id="web-prompt-input" value="Build an interactive SaaS dashboard for this invoice with expense breakdown charts, payment button, and line items table" placeholder="Describe the web app or dashboard you want to generate..." class="flex-1 bg-slate-900 text-slate-200 text-xs p-2.5 rounded-xl border border-slate-700/80 focus:outline-none focus:border-cyan-500 font-mono">
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <!-- Quick Preset Prompts -->
+          <button onclick="setWebPrompt('invoice')" class="px-2.5 py-1.5 rounded-lg text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition">🧾 Invoice Portal</button>
+          <button onclick="setWebPrompt('resume')" class="px-2.5 py-1.5 rounded-lg text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition">👨‍💻 Portfolio Page</button>
+          <button onclick="setWebPrompt('medical')" class="px-2.5 py-1.5 rounded-lg text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium transition">🩺 Patient Portal</button>
+
+          <!-- Generate Button -->
+          <button id="web-gen-btn" onclick="startWebStreamGeneration()" class="px-5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 transition shadow-lg shadow-indigo-600/30 flex items-center space-x-1.5">
+            <i data-lucide="play" class="w-3.5 h-3.5"></i>
+            <span>Stream HTML</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Split Screen: Left (Live Streaming Terminal Box) | Right (Interactive Live Preview Iframe) -->
+      <div class="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-5 min-h-[580px]">
+        
+        <!-- LEFT: STREAMING TERMINAL CONSOLE (MATCHING USER'S SNIPPET) -->
+        <div class="glass-card rounded-2xl p-5 flex flex-col space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+            <div class="flex items-center space-x-2">
+              <i data-lucide="terminal" class="w-4 h-4 text-indigo-400"></i>
+              <h3 class="text-sm font-bold text-slate-200">Real-Time Streaming Code Terminal</h3>
+            </div>
+            <span id="stream-status-pill" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Idle</span>
           </div>
 
+          <!-- Streaming Box Container with dynamic border transition (#667eea during stream, #28a745 on complete) -->
+          <div id="stream-container-wrapper" class="flex-1 relative flex flex-col min-h-[460px] rounded-xl overflow-hidden transition-all duration-300" style="border: 2px solid #334155; background: #0f172a;">
+            
+            <div class="bg-slate-900/90 px-3 py-2 border-b border-slate-800 flex items-center justify-between text-[11px] font-mono text-slate-400">
+              <div class="flex items-center space-x-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500/80"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+                <span class="ml-2 text-slate-500">live_token_stream.html</span>
+              </div>
+              <span id="stream-timer" class="text-slate-500">0.0s</span>
+            </div>
+
+            <!-- Auto-scrolling pre element with requestAnimationFrame -->
+            <div id="stream-container" class="flex-1 p-4 overflow-y-auto custom-scroll" style="max-height: 480px;">
+              <pre id="stream-pre" style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #93c5fd; white-space: pre-wrap; word-wrap: break-word;">Click "Stream HTML" to generate an ultra-modern interactive web application in real time with auto-scrolling token delivery...</pre>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- RIGHT: LIVE INTERACTIVE PREVIEW IFRAME -->
+        <div class="glass-card rounded-2xl p-5 flex flex-col space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+            <div class="flex items-center space-x-2">
+              <i data-lucide="globe" class="w-4 h-4 text-emerald-400"></i>
+              <h3 class="text-sm font-bold text-slate-200">Interactive Live Web Preview</h3>
+            </div>
+
+            <!-- Preview Actions -->
+            <div class="flex items-center space-x-2">
+              <button onclick="openGeneratedInNewTab()" id="open-tab-btn" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20 transition flex items-center space-x-1">
+                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                <span>Open in Tab</span>
+              </button>
+              <button onclick="downloadGeneratedHtml()" id="download-html-btn" class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition flex items-center space-x-1">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                <span>Save HTML</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Iframe Container -->
+          <div class="flex-1 rounded-xl overflow-hidden border border-slate-800 bg-white relative min-h-[460px] shadow-2xl flex flex-col">
+            <iframe id="web-preview-iframe" class="w-full flex-1 border-0" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
+          </div>
         </div>
 
       </div>
 
     </div>
 
-    <!-- TAB 2: ACCURACY BENCHMARK & EVALUATION DASHBOARD -->
+    <!-- ========================================== -->
+    <!-- TAB 3: ACCURACY BENCHMARK & EVALUATION -->
+    <!-- ========================================== -->
     <div id="tab-benchmark" class="hidden flex-1 flex flex-col space-y-6">
       <div class="glass-card rounded-2xl p-6">
-        
         <div class="flex items-center justify-between mb-6">
           <div>
             <div class="flex items-center space-x-2">
@@ -394,7 +477,6 @@
           </button>
         </div>
 
-        <!-- Metric KPI Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
             <span class="text-xs text-slate-400">Average Field F1-Score</span>
@@ -418,7 +500,6 @@
           </div>
         </div>
 
-        <!-- Detailed Results Table -->
         <div class="overflow-x-auto rounded-xl border border-slate-800">
           <table class="w-full text-left text-xs text-slate-300">
             <thead class="bg-slate-900 text-slate-400 font-semibold uppercase text-[10px] tracking-wider border-b border-slate-800">
@@ -440,7 +521,6 @@
             </tbody>
           </table>
         </div>
-
       </div>
     </div>
 

@@ -4,6 +4,8 @@ let currentExtractedData = null;
 let currentConfidenceScores = null;
 let selectedFile = null;
 let currentViewMode = 'cards';
+let currentGeneratedHtml = null;
+let currentSavedPreviewUrl = null;
 
 // Comprehensive Domain Samples for 1-Click Demos
 const SAMPLES = {
@@ -151,33 +153,234 @@ function launchQuickDemo(type) {
   removeSelectedFile();
 
   showToast('Demo Loaded', `Selected ${type.toUpperCase()} document template. Starting extraction...`, 'info');
-
-  // Trigger immediate extraction
   executeExtraction();
 }
 
 // Tab Switcher
 function switchTab(tab) {
   const extractView = document.getElementById('tab-extract');
+  const webView = document.getElementById('tab-web');
   const benchView = document.getElementById('tab-benchmark');
+
   const extractBtn = document.getElementById('tab-extract-btn');
+  const webBtn = document.getElementById('tab-web-btn');
   const benchBtn = document.getElementById('tab-benchmark-btn');
+
+  // Reset all
+  [extractView, webView, benchView].forEach(v => v.classList.add('hidden'));
+  [extractBtn, webBtn, benchBtn].forEach(b => {
+    b.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition flex items-center space-x-1.5";
+  });
 
   if (tab === 'extract') {
     extractView.classList.remove('hidden');
-    benchView.classList.add('hidden');
     extractBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 transition shadow-md shadow-indigo-600/30 flex items-center space-x-1.5";
-    benchBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition flex items-center space-x-1.5";
-  } else {
-    extractView.classList.add('hidden');
+  } else if (tab === 'web') {
+    webView.classList.remove('hidden');
+    webBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 transition shadow-md shadow-indigo-600/30 flex items-center space-x-1.5";
+  } else if (tab === 'benchmark') {
     benchView.classList.remove('hidden');
     benchBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-indigo-600 transition shadow-md shadow-indigo-600/30 flex items-center space-x-1.5";
-    extractBtn.className = "px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition flex items-center space-x-1.5";
   }
   lucide.createIcons();
 }
 
-// Handle schema selection change
+// Convert current extraction to Web Studio
+function convertToWebStudio() {
+  const text = document.getElementById('raw-text-input').value.trim();
+  const schema = document.getElementById('schema-select').value;
+  switchTab('web');
+
+  if (currentExtractedData) {
+    document.getElementById('web-prompt-input').value = `Create an interactive, responsive modern web dashboard for this ${schema} data:\n${JSON.stringify(currentExtractedData, null, 2)}`;
+  } else if (text) {
+    document.getElementById('web-prompt-input').value = `Create an interactive web application for this document:\n${text.substring(0, 500)}...`;
+  }
+  showToast('Web Studio Ready', 'Transferred document context. Click "Stream HTML" to generate UI.', 'info');
+}
+
+// Quick Preset Prompts for Web Studio
+function setWebPrompt(type) {
+  const input = document.getElementById('web-prompt-input');
+  if (type === 'invoice') {
+    input.value = "Build an ultra-modern SaaS invoice dashboard with expense breakdown charts, status badges, line items table, and PDF download button.";
+  } else if (type === 'resume') {
+    input.value = "Build an elite portfolio website for this candidate with animated tech skill badges, project showcase cards, and contact form.";
+  } else if (type === 'medical') {
+    input.value = "Build a patient clinical health portal with prescription dosages, intake schedule timeline, doctor notes, and pharmacy refill alerts.";
+  }
+}
+
+// ==========================================
+// REAL-TIME STREAMING HTML GENERATION
+// (Matches user's exact Python snippet logic)
+// ==========================================
+async function startWebStreamGeneration() {
+  const prompt = document.getElementById('web-prompt-input').value.trim();
+  const apiKey = localStorage.getItem('structura_gemini_key') || '';
+
+  if (!prompt) {
+    showToast('Prompt Required', 'Please enter a description for the web app.', 'warning');
+    return;
+  }
+
+  const btn = document.getElementById('web-gen-btn');
+  const wrapper = document.getElementById('stream-container-wrapper');
+  const container = document.getElementById('stream-container');
+  const pre = document.getElementById('stream-pre');
+  const statusPill = document.getElementById('stream-status-pill');
+  const timer = document.getElementById('stream-timer');
+  const iframe = document.getElementById('web-preview-iframe');
+
+  btn.disabled = true;
+  btn.innerHTML = `<div class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div><span>Streaming...</span>`;
+
+  // Apply blue streaming border (#667eea) as in user's script
+  wrapper.style.borderColor = "#667eea";
+  wrapper.style.boxShadow = "0 0 25px rgba(102, 126, 234, 0.25)";
+  statusPill.textContent = "Streaming ⟳";
+  statusPill.className = "text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 animate-pulse";
+
+  pre.textContent = "";
+  let fullResponse = "";
+  const startTime = performance.now();
+
+  const timerInterval = setInterval(() => {
+    const sec = ((performance.now() - startTime) / 1000).toFixed(1);
+    timer.textContent = `${sec}s`;
+  }, 100);
+
+  const formData = new FormData();
+  formData.append('prompt', prompt);
+  if (apiKey) formData.append('api_key', apiKey);
+
+  try {
+    const response = await fetch('/api/generate-web', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) throw new Error('Stream request failed');
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder('utf-8');
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value, { stream: true });
+      fullResponse += chunk;
+
+      // Update text in pre
+      pre.textContent = fullResponse;
+
+      // Auto-scroll to bottom with requestAnimationFrame (User's exact code!)
+      requestAnimationFrame(() => {
+        if (container) {
+          container.scrollTop = container.scrollHeight;
+        }
+      });
+    }
+
+    clearInterval(timerInterval);
+    const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
+    timer.textContent = `${elapsed}s`;
+
+    // Completion state: Green border (#28a745) as in user's script!
+    wrapper.style.borderColor = "#28a745";
+    wrapper.style.boxShadow = "0 0 25px rgba(40, 167, 69, 0.25)";
+    statusPill.textContent = `Completed (${elapsed}s) ✓`;
+    statusPill.className = "text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+
+    // Extract HTML using regex
+    const htmlContent = extractHtmlFromMarkdown(fullResponse);
+    if (htmlContent) {
+      currentGeneratedHtml = htmlContent;
+      iframe.srcdoc = htmlContent;
+
+      // Save to server html_outputs folder
+      saveHtmlToServer(htmlContent);
+
+      showToast('Generation Complete', `Generated and rendered in ${elapsed}s.`, 'success');
+    } else {
+      iframe.srcdoc = fullResponse;
+      currentGeneratedHtml = fullResponse;
+    }
+
+  } catch (err) {
+    clearInterval(timerInterval);
+    wrapper.style.borderColor = "#e53e3e";
+    statusPill.textContent = "Error";
+    showToast('Streaming Error', err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<i data-lucide="play" class="w-3.5 h-3.5"></i><span>Stream HTML</span>`;
+    lucide.createIcons();
+  }
+}
+
+// Regex HTML extraction
+function extractHtmlFromMarkdown(text) {
+  const pattern = /```(?:html)?\s*([\s\S]*?)\s*```/i;
+  const match = text.match(pattern);
+  if (match && match[1]) {
+    return match[1].trim();
+  }
+  if (text.includes("<!DOCTYPE html>") || text.includes("<html")) {
+    const start = text.indexOf("<!DOCTYPE html>") !== -1 ? text.indexOf("<!DOCTYPE html>") : text.indexOf("<html");
+    const end = text.lastIndexOf("</html>");
+    if (end !== -1) {
+      return text.substring(start, end + 7).trim();
+    }
+  }
+  return null;
+}
+
+// Save HTML to server backend
+async function saveHtmlToServer(htmlContent) {
+  try {
+    const form = new FormData();
+    form.append('html_content', htmlContent);
+    const res = await fetch('/api/save-web', {
+      method: 'POST',
+      body: form
+    });
+    const data = await res.json();
+    if (data.status === 'saved') {
+      currentSavedPreviewUrl = data.preview_url;
+    }
+  } catch (e) {
+    console.error('Error saving html:', e);
+  }
+}
+
+// Open preview in standalone browser tab (Matches user's open_in_browser)
+function openGeneratedInNewTab() {
+  if (currentSavedPreviewUrl) {
+    window.open(currentSavedPreviewUrl, '_blank');
+  } else if (currentGeneratedHtml) {
+    const blob = new Blob([currentGeneratedHtml], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  } else {
+    showToast('No Web Page', 'Generate a web page first.', 'warning');
+  }
+}
+
+function downloadGeneratedHtml() {
+  if (!currentGeneratedHtml) return showToast('Error', 'No generated HTML to download.', 'warning');
+  const blob = new Blob([currentGeneratedHtml], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `structura_app_${Date.now()}.html`;
+  a.click();
+  showToast('Saved', 'HTML file downloaded.', 'success');
+}
+
+// ==========================================
+// EXTRACTION STUDIO LOGIC
+// ==========================================
 function handleSchemaChange() {
   const select = document.getElementById('schema-select');
   if (select.value === 'custom') {
@@ -189,7 +392,6 @@ function handleSchemaChange() {
   }
 }
 
-// Drag & Drop
 function setupDragAndDrop() {
   const dropzone = document.getElementById('dropzone');
   ['dragenter', 'dragover'].forEach(name => {
@@ -206,16 +408,12 @@ function setupDragAndDrop() {
   });
   dropzone.addEventListener('drop', (e) => {
     const files = e.dataTransfer.files;
-    if (files.length > 0) {
-      handleFile(files[0]);
-    }
+    if (files.length > 0) handleFile(files[0]);
   });
 }
 
 function handleFileSelect(e) {
-  if (e.target.files.length > 0) {
-    handleFile(e.target.files[0]);
-  }
+  if (e.target.files.length > 0) handleFile(e.target.files[0]);
 }
 
 function handleFile(file) {
@@ -244,11 +442,9 @@ function clearInput() {
   resetStepper();
 }
 
-// Animated Stepper Helper
-function setStepperStep(stepNum, status) { // status: 'active', 'done', 'error'
+function setStepperStep(stepNum, status) {
   const el = document.getElementById(`step-${stepNum}`);
   if (!el) return;
-
   const iconDiv = el.querySelector('.step-icon');
   el.className = 'flex flex-col items-center space-y-1';
 
@@ -268,12 +464,9 @@ function setStepperStep(stepNum, status) { // status: 'active', 'done', 'error'
 }
 
 function resetStepper() {
-  for (let i = 1; i <= 4; i++) {
-    setStepperStep(i, 'idle');
-  }
+  for (let i = 1; i <= 4; i++) setStepperStep(i, 'idle');
 }
 
-// Execute Extraction
 async function executeExtraction() {
   const rawText = document.getElementById('raw-text-input').value.trim();
   const schemaType = document.getElementById('schema-select').value;
@@ -285,7 +478,6 @@ async function executeExtraction() {
     return;
   }
 
-  // Activate Animated Laser Scanner & Stepper
   const scanner = document.getElementById('scanner-overlay');
   scanner.classList.remove('hidden');
   document.getElementById('left-document-card').classList.add('pulse-border-active');
@@ -307,7 +499,6 @@ async function executeExtraction() {
   }, 400);
 
   try {
-    const startTime = performance.now();
     const response = await fetch('/api/extract', {
       method: 'POST',
       body: formData
@@ -317,9 +508,7 @@ async function executeExtraction() {
     setStepperStep(3, 'active');
 
     const res = await response.json();
-    if (!response.ok) {
-      throw new Error(res.detail || 'Extraction failed');
-    }
+    if (!response.ok) throw new Error(res.detail || 'Extraction failed');
 
     setStepperStep(3, 'done');
 
@@ -334,7 +523,7 @@ async function executeExtraction() {
     currentConfidenceScores = res.confidence_scores;
 
     renderResults(res);
-    showToast('Success', `Extracted & verified in ${res.processing_time_seconds}s with ${res.validation_passed ? '100% accuracy' : 'warnings'}.`, 'success');
+    showToast('Success', `Extracted & verified in ${res.processing_time_seconds}s.`, 'success');
 
   } catch (err) {
     showToast('Extraction Error', err.message, 'error');
@@ -346,19 +535,17 @@ async function executeExtraction() {
   }
 }
 
-// Render Results
 function renderResults(res) {
   document.getElementById('empty-state').classList.add('hidden');
   document.getElementById('search-filter-box').classList.remove('hidden');
 
-  // Self-Healing Alert Banner
   const banner = document.getElementById('healing-banner');
   const bannerContent = document.getElementById('healing-banner-content');
   if (res.healing_applied || !res.validation_passed) {
     banner.classList.remove('hidden');
     let msg = `<strong>Self-Healing Engine:</strong> `;
     if (res.healing_applied && res.validation_passed) {
-      msg += `Mathematical discrepancies were detected and autonomously reconciled across ${res.healing_rounds} reflection cycle.`;
+      msg += `Discrepancies automatically reconciled across ${res.healing_rounds} reflection cycle.`;
     } else if (res.validation_errors && res.validation_errors.length > 0) {
       msg += `Validation flags: <ul class="list-disc pl-4 mt-1 font-mono text-[11px]">` +
         res.validation_errors.map(e => `<li>${e}</li>`).join('') + `</ul>`;
@@ -368,7 +555,6 @@ function renderResults(res) {
     banner.classList.add('hidden');
   }
 
-  // Populate Field Cards View
   const container = document.getElementById('fields-container');
   container.innerHTML = '';
   container.classList.remove('hidden');
@@ -381,13 +567,10 @@ function renderResults(res) {
     container.appendChild(createFieldCard(key, value, fieldConf));
   }
 
-  // JSON View
   document.getElementById('json-code').textContent = JSON.stringify(data, null, 2);
-
   lucide.createIcons();
 }
 
-// Create Field Card with Circular SVG Confidence Dial
 function createFieldCard(key, value, conf) {
   const card = document.createElement('div');
   card.className = 'field-item glass-card rounded-xl p-3.5 flex flex-col space-y-2 group relative transition';
@@ -403,9 +586,6 @@ function createFieldCard(key, value, conf) {
     colorClass = 'text-rose-400';
     badgeBg = 'bg-rose-500/10 border-rose-500/20 text-rose-300';
   }
-
-  // Stroke-dash calculations for SVG circular meter (Circumference = 2 * PI * r = ~75.4)
-  const offset = 75.4 - (75.4 * pct) / 100;
 
   let valueHtml = '';
   if (Array.isArray(value)) {
@@ -433,7 +613,6 @@ function createFieldCard(key, value, conf) {
         <span class="text-xs font-bold text-slate-200 capitalize tracking-wide">${key.replace(/_/g, ' ')}</span>
       </div>
 
-      <!-- Circular Confidence Meter -->
       <div class="flex items-center space-x-2" title="${conf.reasoning}">
         <span class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full border ${badgeBg}">
           ${conf.status.toUpperCase()}
@@ -459,7 +638,6 @@ function createFieldCard(key, value, conf) {
   return card;
 }
 
-// Table view for nested arrays
 function createNestedTable(items) {
   if (!items || items.length === 0) return '<div class="text-xs text-slate-500">Empty List</div>';
   const headers = Object.keys(items[0]);
@@ -477,17 +655,13 @@ function createNestedTable(items) {
   return html;
 }
 
-// Field filter
 function filterFields(query) {
   const q = query.toLowerCase().trim();
   const items = document.querySelectorAll('.field-item');
   items.forEach(it => {
     const key = it.getAttribute('data-field-key') || '';
-    if (!q || key.includes(q)) {
-      it.classList.remove('hidden');
-    } else {
-      it.classList.add('hidden');
-    }
+    if (!q || key.includes(q)) it.classList.remove('hidden');
+    else it.classList.add('hidden');
   });
 }
 
@@ -511,7 +685,6 @@ function copyJsonToClipboard() {
   }
 }
 
-// View Mode Toggle
 function setViewMode(mode) {
   currentViewMode = mode;
   const cards = document.getElementById('fields-container');
@@ -585,7 +758,6 @@ function exportSQL() {
   }
 
   const sql = `-- Generated by StructuraAI Platform\nCREATE TABLE IF NOT EXISTS extracted_documents (\n  id SERIAL PRIMARY KEY,\n${columns.join(',\n')}\n);\n\nINSERT INTO extracted_documents (${Object.keys(currentExtractedData).join(', ')})\nVALUES (${values.join(', ')});\n`;
-
   document.getElementById('sql-output').textContent = sql;
   toggleSqlModal();
 }
@@ -600,7 +772,6 @@ function copySqlToClipboard() {
   showToast('SQL Copied', 'SQL DDL & INSERT statements copied to clipboard.', 'success');
 }
 
-// API Key Modal
 function toggleKeyModal() {
   document.getElementById('key-modal').classList.toggle('hidden');
 }
@@ -619,7 +790,6 @@ function saveApiKey() {
   toggleKeyModal();
 }
 
-// Toast Notification Manager
 function showToast(title, message, type = 'info') {
   const container = document.getElementById('toast-container');
   const toast = document.createElement('div');
@@ -650,7 +820,6 @@ function showToast(title, message, type = 'info') {
   }, 3200);
 }
 
-// Live Benchmark Runner
 async function runLiveBenchmark() {
   const btn = document.getElementById('run-bench-btn');
   btn.disabled = true;
